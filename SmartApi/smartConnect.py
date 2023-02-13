@@ -6,13 +6,13 @@ import dateutil.parser
 import hashlib
 import logging
 import datetime
-import smartapi.smartExceptions as ex
+import SmartApi.smartExceptions as ex
 import requests
 from requests import get
 import re, uuid
 import socket
 import platform
-from smartapi.version import __version__, __title__
+from SmartApi.version import __version__, __title__
 
 log = logging.getLogger(__name__)
 #user_sys=platform.system()
@@ -22,7 +22,8 @@ class SmartConnect(object):
     #_rootUrl = "https://openapisuat.angelbroking.com"
     _rootUrl="https://apiconnect.angelbroking.com" #prod endpoint
     #_login_url ="https://smartapi.angelbroking.com/login"
-    _login_url="https://smartapi.angelbroking.com/publisher-login" #prod endpoint
+    # _login_url="https://smartapi.angelbroking.com/publisher-login" #prod endpoint
+    _login_url="https://apiconnect.angelbroking.com" #prod endpoint
     _default_timeout = 7  # In seconds
 
     _routes = {
