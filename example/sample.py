@@ -10,12 +10,10 @@ totp = "<TOTP>"
 
 #create object of call
 obj=SmartConnect(api_key=apiKey)
-print('obj : ',obj)
 
 #login api call
 
 data = obj.generateSession(clientId,pin,totp)
-print('data',data)
 
 authToken = data['data']['jwtToken']
 authToken = f'Bearer {authToken}'
@@ -43,8 +41,8 @@ try:
         "stoploss": "0",
         "quantity": "1"
         }
-    # orderId=obj.placeOrder(orderparams)
-    # print("The order id is: {}".format(orderId))
+    orderId=obj.placeOrder(orderparams)
+    print("The order id is: {}".format(orderId))
 except Exception as e:
     print("Order placement failed: {}".format(e.message))
 #gtt rule creation
@@ -87,7 +85,8 @@ try:
     obj.getCandleData(historicParam)
 except Exception as e:
     print("Historic Api failed: {}".format(e.message))
-logout
+    
+# logout
 try:
     logout=obj.terminateSession('Your Client Id')
     print("Logout Successfull")

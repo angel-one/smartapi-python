@@ -3,7 +3,6 @@
     @author: Abhijeet Bote
     :copyright: (c) 2022 by Angel One Limited
 """
-from __future__ import print_function
 
 import struct
 # import threading
@@ -248,13 +247,13 @@ class SmartWebSocketV2(object):
         """
             Make the web socket connection with the server
         """
+        headers = {
+            "Authorization": self.auth_token,
+            "x-api-key": self.api_key,
+            "x-client-code": self.client_code,
+            "x-feed-token": self.feed_token
+        }
         try:
-            headers = {
-                "Authorization": self.auth_token,
-                "x-api-key": self.api_key,
-                "x-client-code": self.client_code,
-                "x-feed-token": self.feed_token
-            }
             self.wsapp = websocket.WebSocketApp(self.ROOT_URI, header=headers, on_open=self._on_open,
                                                 on_error=self._on_error, on_close=self._on_close, on_data=self._on_data,
                                                 on_ping=self._on_ping, on_pong=self._on_pong)
@@ -298,16 +297,15 @@ class SmartWebSocketV2(object):
         self.on_close(wsapp)
 
     def _parse_binary_data(self, binary_data):
-        try:
-            parsed_data = {
-                "subscription_mode": self._unpack_data(binary_data, 0, 1, byte_format="B")[0],
-                "exchange_type": self._unpack_data(binary_data, 1, 2, byte_format="B")[0],
-                "token": SmartWebSocketV2._parse_token_value(binary_data[2:27]),
-                "sequence_number": self._unpack_data(binary_data, 27, 35, byte_format="q")[0],
-                "exchange_timestamp": self._unpack_data(binary_data, 35, 43, byte_format="q")[0],
-                "last_traded_price": self._unpack_data(binary_data, 43, 51, byte_format="q")[0]
-            }
-
+        parsed_data = {
+            "subscription_mode": self._unpack_data(binary_data, 0, 1, byte_format="B")[0],
+            "exchange_type": self._unpack_data(binary_data, 1, 2, byte_format="B")[0],
+            "token": SmartWebSocketV2._parse_token_value(binary_data[2:27]),
+            "sequence_number": self._unpack_data(binary_data, 27, 35, byte_format="q")[0],
+            "exchange_timestamp": self._unpack_data(binary_data, 35, 43, byte_format="q")[0],
+            "last_traded_price": self._unpack_data(binary_data, 43, 51, byte_format="q")[0]
+        }
+        try:            
             parsed_data["subscription_mode_val"] = self.SUBSCRIPTION_MODE_MAP.get(parsed_data["subscription_mode"])
 
             if parsed_data["subscription_mode"] in [self.QUOTE, self.SNAP_QUOTE]:
