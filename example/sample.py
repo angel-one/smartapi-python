@@ -7,6 +7,8 @@ apiKey = "<YOUR API KEY>"
 clientId = "<YOUR CLIENT ID>"
 pin = "<PIN>"
 totp = "<TOTP>"
+correlation_id = "<YOUR CORRELATION ID>"
+
 
 
 #create object of call
