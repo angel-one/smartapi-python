@@ -3,11 +3,10 @@ from SmartApi import SmartConnect #or from smartapi.smartConnect import SmartCon
 # import SmartApi.smartExceptions #(for smartExceptions)
 
 
-apiKey = "uU2XbJU1"
-clientId = "A50193197"
-pin = "1918"
-totp = "397243"
-correlation_id = "abhijeet_123_qwerty"
+apiKey = "<YOUR API KEY>"
+clientId = "<YOUR CLIENT ID>"
+pin = "<PIN>"
+totp = "<TOTP>"
 
 
 #create object of call
