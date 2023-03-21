@@ -9,6 +9,7 @@ import threading
 import base64
 import zlib
 from datetime import datetime
+from logzero import logger
 from twisted.internet import reactor, ssl
 from twisted.python import log as twisted_log
 from twisted.internet.protocol import ReconnectingClientFactory
@@ -84,7 +85,7 @@ class SmartSocketClientFactory(WebSocketClientFactory,ReconnectingClientFactory)
     def clientConnectionFailed(self, connector, reason):  # noqa
         """On connection failure (When connect request fails)"""
         if self.retries > 0:
-            print("Retrying connection. Retry attempt count: {}. Next retry in around: {} seconds".format(self.retries, int(round(self.delay))))
+            logger.info("Retrying connection. Retry attempt count: {}. Next retry in around: {} seconds".format(self.retries, int(round(self.delay))))
 
             # on reconnect callback
             if self.on_reconnect:
@@ -207,14 +208,14 @@ class WebSocket(object):
         self.factory.maxRetries = self.reconnect_max_tries
 
     def connect(self, threaded=False, disable_ssl_verification=False, proxy=None):
-        #print("Connect")
+        logger.info("Connect")
         self._create_connection(self.ROOT_URI)
         
         context_factory = None
-        #print(self.factory.isSecure,disable_ssl_verification)
+        logger.info(self.factory.isSecure,disable_ssl_verification)
         if self.factory.isSecure and not disable_ssl_verification:
             context_factory = ssl.ClientContextFactory()
-        #print("context_factory",context_factory)
+        logger.info("context_factory",context_factory)
         connectWS(self.factory, contextFactory=context_factory, timeout=30)
 
         # Run in seperate thread of blocking
@@ -223,7 +224,7 @@ class WebSocket(object):
         # Run when reactor is not running
         if not reactor.running:
             if threaded:
-                #print("inside threaded")
+                logger.info("inside threaded")
                 # Signals are not allowed in non main thread by twisted so suppress it.
                 opts["installSignalHandlers"] = False
                 self.websocket_thread = threading.Thread(target=reactor.run, kwargs=opts)
@@ -234,14 +235,14 @@ class WebSocket(object):
 
 
     def is_connected(self):
-        #print("Check if WebSocket connection is established.")
+        logger.info("Check if WebSocket connection is established.")
         if self.ws and self.ws.state == self.ws.STATE_OPEN:
             return True
         else:
             return False
 
     def _close(self, code=None, reason=None):
-        #print("Close the WebSocket connection.")
+        logger.info("Close the WebSocket connection.")
         if self.ws:
             self.ws.sendClose(code, reason)
 
@@ -252,7 +253,7 @@ class WebSocket(object):
 
     def stop(self):
         """Stop the event loop. Should be used if main thread has to be closed in `on_close` method."""
-        #print("stop")
+        logger.info("stop")
         
         reactor.stop()
 
@@ -277,7 +278,7 @@ class WebSocket(object):
         self.ws.sendMessage(
             six.b(json.dumps(request))
         )
-        #print(request)
+        logger.info(request)
 
         threading.Thread(target=self.heartBeat,daemon=True).start()
         
@@ -296,16 +297,15 @@ class WebSocket(object):
                 self._close(reason="Error while request sending: {}".format(str(e)))
                 raise
         else:
-            print("The task entered is invalid, Please enter correct task(mw,sfi,dp) ")
+            logger.info("The task entered is invalid, Please enter correct task(mw,sfi,dp) ")
 
     def _on_connect(self, ws, response):
-        #print("-----_on_connect-------")
+        logger.info("-----_on_connect-------")
         self.ws = ws
         if self.on_connect:
 
-            print(self.on_connect)
+            logger.info(self.on_connect)
             self.on_connect(self, response)
-        #self.websocket_connection              
 
     def _on_close(self, ws, code, reason):
         """Call `on_close` callback when connection is closed."""
@@ -355,7 +355,7 @@ class WebSocket(object):
                 )
         
             except:
-                print("HeartBeats Failed")
+                logger.info("HeartBeats Failed")
             time.sleep(60)
 
 

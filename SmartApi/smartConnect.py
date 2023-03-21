@@ -6,52 +6,27 @@ import dateutil.parser
 import hashlib
 import logging
 import datetime
-import smartapi.smartExceptions as ex
+import SmartApi.smartExceptions as ex
 import requests
 from requests import get
 import re, uuid
 import socket
 import platform
-from smartapi.version import __version__, __title__
+from SmartApi.version import __version__, __title__
+from SmartApi import CONSTANTS
+from logzero import logger
+
+
 
 log = logging.getLogger(__name__)
-#user_sys=platform.system()
-#print("the system",user_sys)
 
 class SmartConnect(object):
-    #_rootUrl = "https://openapisuat.angelbroking.com"
-    _rootUrl="https://apiconnect.angelbroking.com" #prod endpoint
-    #_login_url ="https://smartapi.angelbroking.com/login"
-    _login_url="https://smartapi.angelbroking.com/publisher-login" #prod endpoint
-    _default_timeout = 7  # In seconds
+    _rootUrl=CONSTANTS._rootUrl #prod endpoint
+    _login_url=CONSTANTS._login_url #prod endpoint
 
-    _routes = {
-        "api.login":"/rest/auth/angelbroking/user/v1/loginByPassword",
-        "api.logout":"/rest/secure/angelbroking/user/v1/logout",
-        "api.token": "/rest/auth/angelbroking/jwt/v1/generateTokens",
-        "api.refresh": "/rest/auth/angelbroking/jwt/v1/generateTokens",
-        "api.user.profile": "/rest/secure/angelbroking/user/v1/getProfile",
+    _default_timeout = CONSTANTS._default_timeout  # In seconds
 
-        "api.order.place": "/rest/secure/angelbroking/order/v1/placeOrder",
-        "api.order.modify": "/rest/secure/angelbroking/order/v1/modifyOrder",
-        "api.order.cancel": "/rest/secure/angelbroking/order/v1/cancelOrder",
-        "api.order.book":"/rest/secure/angelbroking/order/v1/getOrderBook",
-        
-        "api.ltp.data": "/rest/secure/angelbroking/order/v1/getLtpData",
-        "api.trade.book": "/rest/secure/angelbroking/order/v1/getTradeBook",
-        "api.rms.limit": "/rest/secure/angelbroking/user/v1/getRMS",
-        "api.holding": "/rest/secure/angelbroking/portfolio/v1/getHolding",
-        "api.position": "/rest/secure/angelbroking/order/v1/getPosition",
-        "api.convert.position": "/rest/secure/angelbroking/order/v1/convertPosition",
-
-        "api.gtt.create":"/gtt-service/rest/secure/angelbroking/gtt/v1/createRule",
-        "api.gtt.modify":"/gtt-service/rest/secure/angelbroking/gtt/v1/modifyRule",
-        "api.gtt.cancel":"/gtt-service/rest/secure/angelbroking/gtt/v1/cancelRule",
-        "api.gtt.details":"/rest/secure/angelbroking/gtt/v1/ruleDetails",
-        "api.gtt.list":"/rest/secure/angelbroking/gtt/v1/ruleList",
-
-        "api.candle.data":"/rest/secure/angelbroking/historical/v1/getCandleData"
-    }
+    _routes = CONSTANTS._routes
 
 
     try:
@@ -61,7 +36,7 @@ class SmartConnect(object):
         hostname = socket.gethostname()
         clientLocalIp=socket.gethostbyname(hostname)
     except Exception as e:
-        print("Exception while retriving IP Address,using local host IP address",e)
+        logger.error(f"Exception while retriving IP Address,using local host IP address",e)
     finally:
         clientPublicIp="106.193.147.98"
         clientLocalIp="127.0.0.1"
@@ -96,7 +71,7 @@ class SmartConnect(object):
             self.reqsession = requests.Session()
             reqadapter = requests.adapters.HTTPAdapter(**pool)
             self.reqsession.mount("https://", reqadapter)
-            print("in pool")
+            logger.info(f"in pool")
         else:
             self.reqsession = requests
 
@@ -177,6 +152,7 @@ class SmartConnect(object):
                                         proxies=self.proxies)
            
         except Exception as e:
+            logger.error(f"Exception while HTTP Request",e)
             raise e
 
         if self.debug:
@@ -188,6 +164,7 @@ class SmartConnect(object):
                 data = json.loads(r.content.decode("utf8"))
              
             except ValueError:
+                logger.error(f"Couldn't parse the JSON response received from the server: {content}".format(content=r.content))
                 raise ex.DataException("Couldn't parse the JSON response received from the server: {content}".format(
                     content=r.content))
 
@@ -287,7 +264,7 @@ class SmartConnect(object):
             if params[k] is None :
                 del(params[k])
         
-        orderResponse= self._postRequest("api.order.place", params)['data']['orderid']
+        orderResponse= self._postRequest("api.order.place", params)
     
         return orderResponse
     
@@ -351,7 +328,7 @@ class SmartConnect(object):
                 del(params[k])
 
         createGttRuleResponse=self._postRequest("api.gtt.create",params)
-        #print(createGttRuleResponse)       
+        logger.info(createGttRuleResponse)       
         return createGttRuleResponse['data']['id']
 
     def gttModifyRule(self,modifyRuleParams):
@@ -360,7 +337,7 @@ class SmartConnect(object):
             if params[k] is None:
                 del(params[k])
         modifyGttRuleResponse=self._postRequest("api.gtt.modify",params)
-        #print(modifyGttRuleResponse)
+        logger.info(modifyGttRuleResponse)
         return modifyGttRuleResponse['data']['id']
      
     def gttCancelRule(self,gttCancelParams):
@@ -369,9 +346,9 @@ class SmartConnect(object):
             if params[k] is None:
                 del(params[k])
         
-        #print(params)
+        logger.info(params)
         cancelGttRuleResponse=self._postRequest("api.gtt.cancel",params)
-        #print(cancelGttRuleResponse)
+        logger.info(cancelGttRuleResponse)
         return cancelGttRuleResponse
      
     def gttDetails(self,id):
@@ -389,7 +366,7 @@ class SmartConnect(object):
                 "count":count
             }
             gttListResponse=self._postRequest("api.gtt.list",params)
-            #print(gttListResponse)
+            logger.info(gttListResponse)
             return gttListResponse
         else:
             message="The status param is entered as" +str(type(status))+". Please enter status param as a list i.e., status=['CANCELLED']"
