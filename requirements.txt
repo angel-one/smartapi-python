@@ -1,0 +1,6 @@
+setuptools~=44.1.1
+six~=1.16.0
+python-dateutil~=2.8.2
+requests~=2.27.1
+websocket-client~=0.59.0
+logzero~=1.7.0

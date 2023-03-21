@@ -1,13 +1,13 @@
 # package import statement
 from SmartApi import SmartConnect #or from smartapi.smartConnect import SmartConnect
+from logzero import logger
 # import SmartApi.smartExceptions #(for smartExceptions)
-
 
 apiKey = "<YOUR API KEY>"
 clientId = "<YOUR CLIENT ID>"
 pin = "<PIN>"
 totp = "<TOTP>"
-correlation_id = "<YOUR CORRELATION ID>"
+correlation_id = "<correlation_id>"
 
 
 
@@ -33,66 +33,64 @@ userProfile= obj.getProfile(refreshToken)
 
 def error_json(correlation_id, code, msg):
     errorJson = {
-        "correlationID": correlation_id,
-        "errorCode": code,
-        "errorMessage": msg
+        f"correlationID": correlation_id,
+        f"errorCode": code,
+        f"errorMessage": msg
     }
     return errorJson
 
 
-#place order
+# place order
 try:
-    orderparams = {
-        "variety": "NORMAL",
-        "tradingsymbol": "SBIN-EQ",
-        "symboltoken": "3045",
-        "transactiontype": "BUY",
-        "exchange": "NSE",
-        "ordertype": "LIMIT",
-        "producttype": "INTRADAY",
-        "duration": "DAY",
-        "price": "19500",
-        "squareoff": "0",
-        "stoploss": "0",
-        "quantity": "1"
-        }
-    orderId=obj.placeOrder(orderparams)
-    print("The order id is: {}".format(orderId))
+	orderparams = {
+		"variety": "NORMAL",
+		"tradingsymbol": "SBIN-EQ",
+		"symboltoken": "3045",
+		"transactiontype": "BUY",
+		"exchange": "NSE",
+		"ordertype": "LIMIT",
+		"producttype": "INTRADAY",
+		"duration": "DAY",
+		"price": "19500",
+		"squareoff": "0",
+		"stoploss": "0",
+		"quantity": "1"
+		}
+	orderId=obj.placeOrder(orderparams)
+	logger.info("The order id is: {}".format(orderId))
 except TypeError:
     code = "E1001"
     msg = "Invalid Request Payload."
-    print(error_json(correlation_id, code, msg))
+    logger.error(error_json(correlation_id, code, msg))
 except Exception:
     code = "E1002"
     msg = "Invalid Request. Subscription Limit Exceeded."
-    print(error_json(correlation_id, code, msg))
+    logger.error(error_json(correlation_id, code, msg))
 
-    # print("Order placement failed: {}".format(e.message))
 #gtt rule creation
 try:
-    gttCreateParams={
-            "tradingsymbol" : "SBIN-EQ",
-            "symboltoken" : "3045",
-            "exchange" : "NSE", 
-            "producttype" : "MARGIN",
-            "transactiontype" : "BUY",
-            "price" : 100000,
-            "qty" : 10,
-            "disclosedqty": 10,
-            "triggerprice" : 200000,
-            "timeperiod" : 365
-        }
-    rule_id=obj.gttCreateRule(gttCreateParams)
-    print("The GTT rule id is: {}".format(rule_id))
+	gttCreateParams={
+			"tradingsymbol" : "SBIN-EQ",
+			"symboltoken" : "3045",
+			"exchange" : "NSE", 
+			"producttype" : "MARGIN",
+			"transactiontype" : "BUY",
+			"price" : 100000,
+			"qty" : 10,
+			"disclosedqty": 10,
+			"triggerprice" : 200000,
+			"timeperiod" : 365
+		}
+	rule_id=obj.gttCreateRule(gttCreateParams)
+	logger.info("The GTT rule id is: {}".format(rule_id))
 except TypeError:
-    code = "E1001"
-    msg = "Invalid Request Payload."
-    print(error_json(correlation_id, code, msg))
+	code = "E1001"
+	msg = "Invalid Request Payload."
+	logger.error(error_json(correlation_id, code, msg))
 except Exception:
-    code = "E1002"
-    msg = "Invalid Request. Subscription Limit Exceeded."
-    print(error_json(correlation_id, code, msg))
-    # print("GTT Rule creation failed: {}".format(e.message))
+	code = "E1002"
+	msg = "Invalid Request. Subscription Limit Exceeded."
+	logger.error(error_json(correlation_id, code, msg))
     
 #gtt rule list
 try:
@@ -100,15 +98,15 @@ try:
     page=1
     count=10
     lists=obj.gttLists(status,page,count)
+    logger.info("The GTT List : {}".format(lists))
 except TypeError:
     code = "E1001"
     msg = "Invalid Request Payload."
-    print(error_json(correlation_id, code, msg))
+    logger.error(error_json(correlation_id, code, msg))
 except Exception:
     code = "E1002"
     msg = "Invalid Request. Subscription Limit Exceeded."
-    print(error_json(correlation_id, code, msg))
-    # print("GTT Rule List failed: {}".format(e.message))
+    logger.error(error_json(correlation_id, code, msg))
 
 #Historic api
 try:
@@ -119,58 +117,29 @@ try:
     "fromdate": "2021-02-08 09:00", 
     "todate": "2021-02-08 09:16"
     }
-    obj.getCandleData(historicParam)
+    hist_param = obj.getCandleData(historicParam)
+    logger.info("The Historic Params : {}".format(hist_param))
 except TypeError:
     code = "E1001"
     msg = "Invalid Request Payload."
-    print(error_json(correlation_id, code, msg))
+    logger.error(error_json(correlation_id, code, msg))
 except Exception:
     code = "E1002"
     msg = "Invalid Request. Subscription Limit Exceeded."
-    print(error_json(correlation_id, code, msg))
-    # print("Historic Api failed: {}".format(e.message))
+    logger.error(error_json(correlation_id, code, msg))
     
 # logout
 try:
     logout=obj.terminateSession('Your Client Id')
-    print("Logout Successfull")
+    logger.info("Logout Successfull")
 except TypeError:
     code = "E1001"
     msg = "Invalid Request Payload."
-    print(error_json(correlation_id, code, msg))
+    logger.error(error_json(correlation_id, code, msg))
 except Exception:
     code = "E1002"
     msg = "Invalid Request. Subscription Limit Exceeded."
-    print(error_json(correlation_id, code, msg))
-    # print("Logout failed: {}".format(e.message))
-
-
-
-# ## WebSocket
-# from SmartApi import WebSocket
-
-# FEED_TOKEN= "your feed token"
-# CLIENT_CODE="your client Id"
-# token="channel you want the information of" #"nse_cm|2885&nse_cm|1594&nse_cm|11536"
-# task="task" #"mw"|"sfi"|"dp"
-# ss = WebSocket(FEED_TOKEN, CLIENT_CODE)
-
-# def on_tick(ws, tick):
-#     print("Ticks: {}".format(tick))
-
-# def on_connect(ws, response):
-#     ws.websocket_connection() # Websocket connection  
-#     ws.send_request(token,task) 
-    
-# def on_close(ws, code, reason):
-#     ws.stop()
-
-# # Assign the callbacks.
-# ss.on_ticks = on_tick
-# ss.on_connect = on_connect
-# ss.on_close = on_close
-
-# ss.connect()
+    logger.error(error_json(correlation_id, code, msg))
 
 
 
@@ -200,20 +169,20 @@ token_list = [
 sws = SmartWebSocketV2(AUTH_TOKEN, API_KEY, CLIENT_CODE, FEED_TOKEN)
 
 def on_data(wsapp, message):
-    print("Ticks: {}".format(message))
+    logger.info("Ticks: {}".format(message))
 
 
 def on_open(wsapp):
-    print("on open")
+    logger.info("on open")
     sws.subscribe(correlation_id, mode, token_list)
 
 
 def on_error(wsapp, error):
-    print(error)
+    logger.error(error)
 
 
 def on_close(wsapp):
-    print("Close")
+    logger.info("Close")
 
 
 # Assign the callbacks.
