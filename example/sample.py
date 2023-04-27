@@ -144,12 +144,12 @@ except Exception:
 
 
 from SmartApi.smartWebSocketV2 import SmartWebSocketV2
-
-
-
+'''
+websocket
+'''
 AUTH_TOKEN = authToken
-API_KEY = 'uU2XbJU1'
-CLIENT_CODE = 'A50193197'
+API_KEY = "<YOUR API KEY>"
+CLIENT_CODE = "<YOUR CLIENT ID>"
 FEED_TOKEN = feedToken
 
 action = 1
