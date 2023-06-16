@@ -55,7 +55,7 @@ class SmartConnect(object):
 
 
     try:
-        clientPublicIp= " " + get('https://api.ipify.org').text
+        clientPublicIp= " " + get('https://checkip.amazonaws.com').text
         if " " in clientPublicIp:
             clientPublicIp=clientPublicIp.replace(" ","")
         hostname = socket.gethostname()
