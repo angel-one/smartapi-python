@@ -245,7 +245,8 @@ class SmartConnect(object):
             
             return user
         else:
-            return loginResultObject
+            raise Exception(loginResultObject)
+
     def terminateSession(self,clientCode):
         logoutResponseObject=self._postRequest("api.logout",{"clientcode":clientCode})
         return logoutResponseObject
