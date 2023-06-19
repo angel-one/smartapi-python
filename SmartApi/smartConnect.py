@@ -55,7 +55,7 @@ class SmartConnect(object):
 
 
     try:
-        clientPublicIp= " " + get('https://api.ipify.org').text
+        clientPublicIp= " " + get('https://checkip.amazonaws.com').text
         if " " in clientPublicIp:
             clientPublicIp=clientPublicIp.replace(" ","")
         hostname = socket.gethostname()
@@ -245,7 +245,8 @@ class SmartConnect(object):
             
             return user
         else:
-            return loginResultObject
+            raise Exception(loginResultObject)
+
     def terminateSession(self,clientCode):
         logoutResponseObject=self._postRequest("api.logout",{"clientcode":clientCode})
         return logoutResponseObject
