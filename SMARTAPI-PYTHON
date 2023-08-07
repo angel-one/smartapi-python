@@ -4,7 +4,7 @@ import pyotp
 
 api_key =aENtsjyf 
 clientId = S1039025
-pwd = 9067
+pwd = 
 smartApi = SmartConnect(api_key)
 token = "Your QR code value"
 totp=pyotp.TOTP(token).now()
