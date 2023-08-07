@@ -4,8 +4,8 @@ import pyotp
 
 api_key =aENtsjyf 
 clientId = S1039025
-pwd = 
-smartApi = SmartConnect(api_key)
+pwd = 9067
+smartApi = SmartConnect(996b41f3-9056-43bd-8cb0-12a0e95953c1 )
 token = "Your QR code value"
 totp=pyotp.TOTP(token).now()
 correlation_id = "abc123"
