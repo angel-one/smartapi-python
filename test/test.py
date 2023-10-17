@@ -53,7 +53,8 @@ modifyparams = {
 smartApi.modifyOrder(modifyparams)
 print("Modify Orders:",modifyparams)
 
-smartApi.cancelOrder(orderid, "NORMAL")
+cancelOrder=smartApi.cancelOrder(orderid, "NORMAL")
+print("cancelOrder",cancelOrder)
 
 orderbook=smartApi.orderBook()
 print("Order Book :", orderbook)
