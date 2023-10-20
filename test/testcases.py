@@ -290,7 +290,7 @@ class TestCases(unittest.TestCase):
         time.sleep(1)
 
     def test_terminateSession(self):
-        terminate = self.smart_api.terminateSession('A53253992')
+        terminate = self.smart_api.terminateSession('Your User Name')
         self.assertTrue("status" in terminate)
         self.assertTrue("message" in terminate)
         self.assertTrue("errorcode" in terminate)
