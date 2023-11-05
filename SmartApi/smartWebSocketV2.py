@@ -233,7 +233,6 @@ class SmartWebSocketV2(object):
             }
 
             self.input_request_dict.update(request_data)
-            self.input_request_dict.update(request_data)
             self.wsapp.send(json.dumps(request_data))
             self.RESUBSCRIBE_FLAG = True
         except Exception as e:
