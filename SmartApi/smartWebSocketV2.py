@@ -51,7 +51,7 @@ class SmartWebSocketV2(object):
     input_request_dict = {}
     current_retry_attempt = 0
 
-    def __init__(self, auth_token, api_key, client_code, feed_token, max_retry_attempt=1):
+    def __init__(self, auth_token, api_key, client_code, feed_token, max_retry_attempt=1,retry_strategy="simple", retry_delay=10, retry_multiplier=2, retry_duration=60):
         """
             Initialise the SmartWebSocketV2 instance
             Parameters
@@ -72,6 +72,10 @@ class SmartWebSocketV2(object):
         self.DISCONNECT_FLAG = True
         self.last_pong_timestamp = None
         self.MAX_RETRY_ATTEMPT = max_retry_attempt
+        self.retry_strategy = retry_strategy
+        self.retry_delay = retry_delay
+        self.retry_multiplier = retry_multiplier
+        self.retry_duration = retry_duration
 
         if not self._sanity_check():
             raise Exception("Provide valid value for all the tokens")
@@ -338,11 +342,17 @@ class SmartWebSocketV2(object):
             raise e
 
     def _on_error(self, wsapp, error):
-        # self.HB_THREAD_FLAG = False
         self.RESUBSCRIBE_FLAG = True
         if self.current_retry_attempt < self.MAX_RETRY_ATTEMPT:
-            print("Attempting to resubscribe/reconnect...")
+            print(f"Attempting to resubscribe/reconnect (Attempt {self.current_retry_attempt + 1})...")
             self.current_retry_attempt += 1
+            if self.retry_strategy == "simple":
+                time.sleep(self.retry_delay)
+            elif self.retry_strategy == "exponential":
+                delay = self.retry_delay * (self.retry_multiplier ** (self.current_retry_attempt - 1))
+                time.sleep(delay)
+            else:
+                raise Exception("Invalid retry strategy")
             try:
                 self.close_connection()
                 self.connect()
@@ -354,6 +364,10 @@ class SmartWebSocketV2(object):
             self.close_connection()
             if hasattr(self, 'on_error'):
                 self.on_error("Max retry attempt reached", "Connection closed")
+            if self.retry_duration is not None and (self.last_pong_timestamp is not None and time.time() - self.last_pong_timestamp > self.retry_duration * 60):
+                print("Connection closed due to inactivity.")
+            else:
+                print("Connection closed due to max retry attempts reached.")
 
     def _on_close(self, wsapp):
         # self.HB_THREAD_FLAG = False
