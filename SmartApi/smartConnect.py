@@ -63,7 +63,7 @@ class SmartConnect(object):
         hostname = socket.gethostname()
         clientLocalIp=socket.gethostbyname(hostname)
     except Exception as e:
-        logger.exception(f"Exception while retriving IP Address,using local host IP address: {e}")
+        logger.error(f"Exception while retriving IP Address,using local host IP address: {e}")
     finally:
         clientPublicIp="106.193.147.98"
         clientLocalIp="127.0.0.1"
@@ -455,7 +455,7 @@ class SmartConnect(object):
             response_data = self.make_authenticated_get_request(url, self.access_token)
             return response_data
         except Exception as e:
-            logger.exception(f"Error occurred in ind_order_details: {e}")
+            logger.error(f"Error occurred in ind_order_details: {e}")
             return None
     
     def getMarginApi(self,params):

@@ -196,38 +196,35 @@ class SmartWebSocketV2(object):
             }
             if mode == 4:
                 for token in token_list:
-                    if token.get('exchangeType') != 1:
-                        error_message = "Invalid ExchangeType: Please check the exchange type and try again"
-                        logger.error(error_message)
-                        raise ValueError(error_message)
+                        if token.get('exchangeType') != 1:
+                            error_message = f"Invalid ExchangeType:{token.get('exchangeType')} Please check the exchange type and try again it support only 1 exchange type"
+                            logger.error(error_message)
+                            raise ValueError(error_message)
+            
             if self.input_request_dict.get(mode) is None:
                 self.input_request_dict[mode] = {}
+
             for token in token_list:
                 if token['exchangeType'] in self.input_request_dict[mode]:
                     self.input_request_dict[mode][token['exchangeType']].extend(token["tokens"])
                 else:
                     self.input_request_dict[mode][token['exchangeType']] = token["tokens"]
+
             if mode == self.DEPTH:
                 total_tokens = sum(len(token["tokens"]) for token in token_list)
                 quota_limit = 50
                 if total_tokens > quota_limit:
-                    error_message = f"Quota exceeded: You can subscribe to a maximum of {quota_limit} tokens."
+                    error_message = f"Quota exceeded: You can subscribe to a maximum of {quota_limit} tokens only."
                     logger.error(error_message)
                     raise Exception(error_message)
-                else:
-                    self.wsapp.send(json.dumps(request_data))
-                    self.RESUBSCRIBE_FLAG = True
-        except Exception as e:
-            error_message = str(e)
-            if "Quota exceeded" in error_message:
-                logger.error(f"Quota exceeded error: {error_message}")
-                os._exit(1)  # Exit the script when the quota is exceeded
-            elif "Invalid ExchangeType" in error_message:
-                logger.error(f"Invalid ExchangeType: {error_message}")
-                os._exit(1)  # Exit the script when the Invalid ExchangeType
-            logger.exception(f"Error occurred during subscribe: {e}")
-            raise e
 
+            self.wsapp.send(json.dumps(request_data))
+            self.RESUBSCRIBE_FLAG = True
+
+        except Exception as e:
+            logger.error(f"Error occurred during subscribe: {e}")
+            raise e
+        
     def unsubscribe(self, correlation_id, mode, token_list):
         """
             This function unsubscribe the data for given token
@@ -273,7 +270,7 @@ class SmartWebSocketV2(object):
             self.wsapp.send(json.dumps(request_data))
             self.RESUBSCRIBE_FLAG = True
         except Exception as e:
-            logger.exception(f"Error occurred during unsubscribe: {e}")
+            logger.error(f"Error occurred during unsubscribe: {e}")
             raise e
 
     def resubscribe(self):
@@ -295,7 +292,7 @@ class SmartWebSocketV2(object):
                 }
                 self.wsapp.send(json.dumps(request_data))
         except Exception as e:
-            logger.exception(f"Error occurred during resubscribe: {e}")
+            logger.error(f"Error occurred during resubscribe: {e}")
             raise e
 
     def connect(self):
@@ -318,13 +315,14 @@ class SmartWebSocketV2(object):
                                    ping_payload=self.HEART_BEAT_MESSAGE)
             # self.start_ping_timer()
         except Exception as e:
-            logger.exception(f"Error occurred during WebSocket connection: {e}")
+            logger.error(f"Error occurred during WebSocket connection: {e}")
             raise e
 
     def close_connection(self):
         """
         Closes the connection
         """
+        self.RESUBSCRIBE_FLAG = False
         self.DISCONNECT_FLAG = True
         if self.wsapp:
             self.wsapp.close()
@@ -333,7 +331,7 @@ class SmartWebSocketV2(object):
         try:
             self.wsapp.send(self.HEART_BEAT_MESSAGE)
         except Exception as e:
-            logger.exception(f"Error occurred during sending heartbeat: {e}")
+            logger.error(f"Error occurred during sending heartbeat: {e}")
             raise e
         
     def _on_error(self, wsapp, error):
@@ -347,13 +345,13 @@ class SmartWebSocketV2(object):
                 delay = self.retry_delay * (self.retry_multiplier ** (self.current_retry_attempt - 1))
                 time.sleep(delay)
             else:
-                logger.exception(f"Invalid retry strategy {self.retry_strategy}")
+                logger.error(f"Invalid retry strategy {self.retry_strategy}")
                 raise Exception(f"Invalid retry strategy {self.retry_strategy}")
             try:
                 self.close_connection()
                 self.connect()
             except Exception as e:
-                logger.exception(f"Error occurred during resubscribe/reconnect: {e}")
+                logger.error(f"Error occurred during resubscribe/reconnect: {e}")
                 if hasattr(self, 'on_error'):
                     self.on_error("Reconnect Error", str(e) if str(e) else "Unknown error")
         else:
@@ -415,7 +413,7 @@ class SmartWebSocketV2(object):
 
             return parsed_data
         except Exception as e:
-            logger.exception(f"Error occurred during binary data parsing: {e}")
+            logger.error(f"Error occurred during binary data parsing: {e}")
             raise e
 
     def _unpack_data(self, binary_data, start, end, byte_format="I"):
