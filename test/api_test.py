@@ -17,7 +17,7 @@ except Exception as e:
 correlation_id = "abcde"
 data = smartApi.generateSession(username, pwd, totp)
 if data['status'] == False:
-    logger.error(f"Invalid Credentials {data}")
+    logger.error(data)
 else:
     # logger.info(f"data: {data}")
     authToken = data['data']['jwtToken']

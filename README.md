@@ -34,7 +34,7 @@ correlation_id = "abcde"
 data = smartApi.generateSession(username, pwd, totp)
 
 if data['status'] == False:
-    logger.error(f"Invalid Credentials {data}")
+    logger.error(data)
     
 else:
     # login api call
