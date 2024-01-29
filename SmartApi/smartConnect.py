@@ -235,10 +235,15 @@ class SmartConnect(object):
         params={"clientcode":clientCode,"password":password,"totp":totp}
         loginResultObject=self._postRequest("api.login",params)
 
-        if loginResultObject['success']==False:
-            #on failure returns the error message
-            logger.error(f"API User Session Failed: {loginResultObject['message']}")
-            return loginResultObject['message']
+        # return loginResultObject
+        try:
+            if loginResultObject['success']==False:
+                #on failure returns the error message       
+                logger.error(f"API User Session Failed: {loginResultObject['message']}")
+                return loginResultObject['message']
+        
+        except:
+            pass
         
         if loginResultObject['status']==True:
             jwtToken=loginResultObject['data']['jwtToken']
