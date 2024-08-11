@@ -194,11 +194,20 @@ class SmartConnect(object):
         # Custom headers
         headers = self.requestHeaders()
 
-        if self.access_token:
-            # set authorization header
+        # if self.access_token:
+        #     # set authorization header
         
-            auth_header = self.access_token
-            headers["Authorization"] = "Bearer {}".format(auth_header)
+        #     auth_header = self.access_token
+        #     headers["Authorization"] = "Bearer {}".format(auth_header)
+
+        if self.access_token:
+            # Set authorization header
+            # Check if 'Bearer' prefix is already present to prevent duplication
+            # Previously, 'Bearer' was being added indiscriminately, potentially causing
+            # issues like 'Bearer Bearer {token}' if the token already had the prefix
+            if not self.access_token.startswith("Bearer "): 
+                self.access_token = "Bearer " + self.access_token
+            headers["Authorization"] = self.access_token
 
         if self.debug:
             log.debug("Request: {method} {url} {params} {headers}".format(method=method, url=url, params=params, headers=headers))
