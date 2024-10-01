@@ -12,7 +12,6 @@ incremental==22.10.0
 isodate==0.6.1
 logzero==1.7.0
 pycparser==2.21
-pycrypto==2.6.1
 pyotp==2.8.0
 pyparsing==3.1.0
 python-dateutil==2.8.2
