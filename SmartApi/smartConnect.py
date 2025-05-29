@@ -160,8 +160,8 @@ class SmartConnect(object):
             raise TypeError("Invalid input type. Only functions are accepted.")
         self.session_expiry_hook = method
     
-    def getUserId():
-        return userId
+    def getUserId(self):
+        return self.userId
 
     def setUserId(self,id):
         self.userId=id
@@ -270,7 +270,7 @@ class SmartConnect(object):
         params={"clientcode":clientCode,"password":password,"totp":totp}
         loginResultObject=self._postRequest("api.login",params)
         
-        if loginResultObject['status']==True:
+        if loginResultObject.get('status')==True:
             jwtToken=loginResultObject['data']['jwtToken']
             self.setAccessToken(jwtToken)
             refreshToken = loginResultObject['data']['refreshToken']
@@ -290,8 +290,8 @@ class SmartConnect(object):
         else:
             return loginResultObject
             
-    def terminateSession(self,clientCode):
-        logoutResponseObject=self._postRequest("api.logout",{"clientcode":clientCode})
+    def terminateSession(self):
+        logoutResponseObject=self._postRequest("api.logout",{"clientcode":self.userId})
         return logoutResponseObject
 
     def generateToken(self,refresh_token):
@@ -319,8 +319,8 @@ class SmartConnect(object):
        
         return tokenSet
 
-    def getProfile(self,refreshToken):
-        user=self._getRequest("api.user.profile",{"refreshToken":refreshToken})
+    def getProfile(self):
+        user=self._getRequest("api.user.profile")
         return user
 
     def placeOrder(self,orderparams):

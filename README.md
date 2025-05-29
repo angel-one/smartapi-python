@@ -43,23 +43,34 @@ except Exception as e:
     raise e
 
 correlation_id = "abcde"
+# Method 1: login api using password.
 data = smartApi.generateSession(username, pwd, totp)
 
-if data['status'] == False:
-    logger.error(data)
+if data.get('status', False):
+    logger.info(f"Your login data: {data}")
     
-else:
-    # login api call
-    # logger.info(f"You Credentials: {data}")
+    # To get authToken/jwtToken.
     authToken = data['data']['jwtToken']
+    # To get refreshToken.
     refreshToken = data['data']['refreshToken']
-    # fetch the feedtoken
+    # To get the feedtoken.
     feedToken = smartApi.getfeedToken()
-    # fetch User Profile
-    res = smartApi.getProfile(refreshToken)
-    smartApi.generateToken(refreshToken)
-    res=res['data']['exchanges']
 
+else:
+    # Error msg if can't able to login with password(pin).
+    logger.error(data)
+
+    # Method 2: To login or generate authToken/jwtToken using RefreshToken.
+    refreshToken = "Your refresh token from last login"
+    smartApi.generateToken(refreshToken)
+
+# fetch User Profile
+res = smartApi.getProfile()
+
+if not res.get('status'):
+    logger.error(f"Can't login check your credentials: {res}.")
+
+else:    
     #place order
     try:
         orderparams = {
@@ -127,7 +138,7 @@ else:
         logger.exception(f"Historic Api failed: {e}")
     #logout
     try:
-        logout=smartApi.terminateSession('Your Client Id')
+        logout=smartApi.terminateSession()
         logger.info("Logout Successfull")
     except Exception as e:
         logger.exception(f"Logout failed: {e}")
