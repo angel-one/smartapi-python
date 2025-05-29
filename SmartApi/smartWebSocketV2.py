@@ -199,7 +199,7 @@ class SmartWebSocketV2(object):
 
             if mode == self.DEPTH:
                 total_tokens = sum(len(token["tokens"]) for token in token_list)
-                quota_limit = 50
+                quota_limit = 1000 
                 if total_tokens > quota_limit:
                     error_message = f"Quota exceeded: You can subscribe to a maximum of {quota_limit} tokens only."
                     logger.error(error_message)
