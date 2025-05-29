@@ -100,7 +100,7 @@ class SmartConnect(object):
         self.clientLocalIP=self.clientLocalIp
         self.clientPublicIP=self.clientPublicIp
         self.clientMacAddress=self.clientMacAddress
-        self.privateKey=api_key
+        self.privateKey=privateKey
         self.accept=self.accept
         self.userType=self.userType
         self.sourceID=self.sourceID
