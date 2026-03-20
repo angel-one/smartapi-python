@@ -2,18 +2,17 @@ from logzero import logger
 from SmartApi.smartConnect import SmartConnect
 import pyotp
 
-api_key = 'Your Api Key'
-username = 'Your client code'
-pwd = 'Your pin'
-smartApi = SmartConnect(api_key)
+api_key = 'BntudJFe'
+username = 'G90000'
+pwd = '2004'
+smartApi = SmartConnect(BntudJFe)
 
 try:
     token = "Your QR value"
-    totp = pyotp.TOTP(token).now()
+    totp = pyotp.TOTP(OWJHJM2PM6TEBNN4QJUBT7XP7A).now()
 except Exception as e:
     logger.error("Invalid Token: The provided token is not valid.")
     raise e
-
 correlation_id = "abcde"
 data = smartApi.generateSession(username, pwd, totp)
 if data['status'] == False:
