@@ -7,7 +7,10 @@ class SmartAPIException(Exception):
 
 
 class GeneralException(SmartAPIException):
-    """An unclassified, general error. Default code is 500."""
+    """
+    An unclassified, general error.
+    Default code is 500.
+    """
 
     def __init__(self, message, code=500):
         """Initialize the exception."""
@@ -15,7 +18,10 @@ class GeneralException(SmartAPIException):
 
 
 class TokenException(SmartAPIException):
-    """Represents all token and authentication related errors. Default code is 403."""
+    """
+    Represents all token and authentication related errors. 
+    Default code is 403.
+    """
 
     def __init__(self, message, code=403):
         """Initialize the exception."""
@@ -23,7 +29,10 @@ class TokenException(SmartAPIException):
 
 
 class PermissionException(SmartAPIException):
-    """Represents permission denied exceptions for certain calls. Default code is 403."""
+    """
+    Represents permission denied exceptions for certain calls. 
+    Default code is 403.
+    """
 
     def __init__(self, message, code=403):
         """Initialize the exception."""
@@ -31,7 +40,10 @@ class PermissionException(SmartAPIException):
 
 
 class OrderException(SmartAPIException):
-    """Represents all order placement and manipulation errors. Default code is 500."""
+    """
+    Represents all order placement and manipulation errors.
+    Default code is 500.
+    """
 
     def __init__(self, message, code=500):
         """Initialize the exception."""
@@ -39,7 +51,10 @@ class OrderException(SmartAPIException):
 
 
 class InputException(SmartAPIException):
-    """Represents user input errors such as missing and invalid parameters. Default code is 400."""
+    """
+    Represents user input errors such as missing and invalid parameters. 
+    Default code is 400.
+    """
 
     def __init__(self, message, code=400):
         """Initialize the exception."""
@@ -47,7 +62,10 @@ class InputException(SmartAPIException):
 
 
 class DataException(SmartAPIException):
-    """Represents a bad response from the backend Order Management System (OMS). Default code is 502."""
+    """
+    Represents a bad response from the backend Order Management System (OMS). 
+    Default code is 502.
+    """
 
     def __init__(self, message, code=502):
         """Initialize the exception."""
@@ -55,7 +73,10 @@ class DataException(SmartAPIException):
 
 
 class NetworkException(SmartAPIException):
-    """Represents a network issue between api and the backend Order Management System (OMS). Default code is 503."""
+    """
+    Represents a network issue between api and the backend Order Management System (OMS). 
+    Default code is 503.
+    """
 
     def __init__(self, message, code=503):
         """Initialize the exception."""
