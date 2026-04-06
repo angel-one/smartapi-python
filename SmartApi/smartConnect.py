@@ -312,7 +312,7 @@ class SmartConnect(object):
        
         tokenSet={}
 
-        if "jwtToken" in response:
+        if "jwtToken" in response['data']:
             tokenSet['jwtToken']=response['data']['jwtToken']
         tokenSet['clientcode']=self. userId   
         tokenSet['refreshToken']=response['data']["refreshToken"]
